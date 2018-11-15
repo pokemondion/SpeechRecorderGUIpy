@@ -1,0 +1,325 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'W:\diont\Desktop\UI projects\Voice Recorder.ui'
+#
+# Created by: PyQt5 UI code generator 5.9.2
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets, QtTest
+# my own code
+import pyaudio
+import wave
+
+_index = 0
+_totalPhrases = 0
+_textFromFile = []
+_filename = ''
+
+FORMAT = pyaudio.paInt16
+CHANNELS = 2
+RATE = 44100
+CHUNK = 1024
+RECORD_SECONDS = 5
+WAVEOUTPUTNAME = "voice_recording_" + str(1) + ".wav"
+FRAMES = []
+waveFile = 0
+
+audio = pyaudio.PyAudio()
+# start the stream
+streamIn = 0
+
+class Ui_VoiceRecorder(object):
+    def setupUi(self, VoiceRecorder):
+        VoiceRecorder.setObjectName("VoiceRecorder")
+        VoiceRecorder.resize(680, 402)
+        self.centralwidget = QtWidgets.QWidget(VoiceRecorder)
+        self.centralwidget.setObjectName("centralwidget")
+        self.recordBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.recordBtn.setGeometry(QtCore.QRect(20, 260, 101, 101))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.recordBtn.setFont(font)
+        self.recordBtn.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border-left-color: rgb(0, 0, 0);\n"
+"border-top-color: rgb(0, 0, 0);\n"
+"background-color: rgb(175, 5, 5);\n"
+"border-color: rgb(0, 0, 0);")
+        self.recordBtn.setCheckable(False)
+        self.recordBtn.setObjectName("recordBtn")
+        self.stopBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.stopBtn.setGeometry(QtCore.QRect(140, 260, 101, 101))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.stopBtn.setFont(font)
+        self.stopBtn.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border-color: rgb(0, 0, 0);\n"
+"background-color: rgb(175, 5, 5);")
+        self.stopBtn.setObjectName("stopBtn")
+        self.playBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.playBtn.setGeometry(QtCore.QRect(260, 260, 101, 101))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.playBtn.setFont(font)
+        self.playBtn.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border-color: rgb(27, 27, 27);\n"
+"background-color: rgb(0, 191, 0);")
+        self.playBtn.setObjectName("playBtn")
+        self.exitBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.exitBtn.setGeometry(QtCore.QRect(560, 260, 101, 101))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.exitBtn.setFont(font)
+        self.exitBtn.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border-color: rgb(0, 0, 0);\n"
+"background-color: rgb(175, 175, 175);")
+        self.exitBtn.setObjectName("exitBtn")
+        self.mainFrame = QtWidgets.QFrame(self.centralwidget)
+        self.mainFrame.setGeometry(QtCore.QRect(20, 20, 641, 221))
+        self.mainFrame.setStyleSheet("background-color: rgb(96, 152, 255);")
+        self.mainFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.mainFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.mainFrame.setObjectName("mainFrame")
+        self.numPhrasesLbl = QtWidgets.QLabel(self.mainFrame)
+        self.numPhrasesLbl.setGeometry(QtCore.QRect(270, 10, 111, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.numPhrasesLbl.setFont(font)
+        self.numPhrasesLbl.setStyleSheet("color: rgb(255, 255, 255);")
+        self.numPhrasesLbl.setObjectName("numPhrasesLbl")
+        self.phrasesLbl = QtWidgets.QLabel(self.mainFrame)
+        self.phrasesLbl.setGeometry(QtCore.QRect(30, 40, 581, 141))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(14)
+        self.phrasesLbl.setFont(font)
+        self.phrasesLbl.setStyleSheet("color: rgb(255, 255, 255);")
+        self.phrasesLbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.phrasesLbl.setWordWrap(True)
+        self.phrasesLbl.setObjectName("phrasesLbl")
+        self.instructionsLbl = QtWidgets.QLabel(self.mainFrame)
+        self.instructionsLbl.setGeometry(QtCore.QRect(20, 90, 601, 51))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(14)
+        self.instructionsLbl.setFont(font)
+        self.instructionsLbl.setAutoFillBackground(False)
+        self.instructionsLbl.setStyleSheet("color: rgb(255, 255, 255);")
+        self.instructionsLbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.instructionsLbl.setWordWrap(True)
+        self.instructionsLbl.setObjectName("instructionsLbl")
+        self.phrasesFileLbl = QtWidgets.QLabel(self.centralwidget)
+        self.phrasesFileLbl.setGeometry(QtCore.QRect(20, 290, 81, 21))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.phrasesFileLbl.setFont(font)
+        self.phrasesFileLbl.setStyleSheet("")
+        self.phrasesFileLbl.setObjectName("phrasesFileLbl")
+        self.submitBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.submitBtn.setGeometry(QtCore.QRect(380, 260, 101, 101))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.submitBtn.setFont(font)
+        self.submitBtn.setStyleSheet("color: rgb(255, 255, 255);\n"
+"border-color: rgb(0, 0, 0);\n"
+"background-color: rgb(96, 152, 255);")
+        self.submitBtn.setObjectName("submitBtn")
+        self.textEditBox = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEditBox.setGeometry(QtCore.QRect(110, 290, 361, 31))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.textEditBox.setFont(font)
+        self.textEditBox.setObjectName("textEditBox")
+        self.nextBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.nextBtn.setGeometry(QtCore.QRect(580, 290, 81, 31))
+        self.nextBtn.setStyleSheet("border-color: rgb(0, 0, 0);\n"
+"color: rgb(255, 255, 255);\n"
+"background-color: rgb(96, 152, 255);")
+        self.nextBtn.setObjectName("nextBtn")
+        self.browseBtn = QtWidgets.QPushButton(self.centralwidget)
+        self.browseBtn.setGeometry(QtCore.QRect(490, 290, 81, 31))
+        self.browseBtn.setStyleSheet("border-color: rgb(0, 0, 0);")
+        self.browseBtn.setObjectName("browseBtn")
+        self.recordingLbl = QtWidgets.QLabel(self.centralwidget)
+        self.recordingLbl.setGeometry(QtCore.QRect(30, 300, 91, 21))
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        self.recordingLbl.setFont(font)
+        self.recordingLbl.setStyleSheet("color: rgb(255, 0, 0);")
+        self.recordingLbl.setObjectName("recordingLbl")
+        VoiceRecorder.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(VoiceRecorder)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 680, 21))
+        self.menubar.setObjectName("menubar")
+        VoiceRecorder.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(VoiceRecorder)
+        self.statusbar.setObjectName("statusbar")
+        VoiceRecorder.setStatusBar(self.statusbar)
+
+        self.retranslateUi(VoiceRecorder)
+        QtCore.QMetaObject.connectSlotsByName(VoiceRecorder)
+        
+        # my own code
+        self.recordingLbl.hide()
+        self.recordBtn.hide()
+        self.stopBtn.hide()
+        self.playBtn.hide()
+        self.exitBtn.hide()
+        self.submitBtn.hide()
+        
+        self.browseBtn.clicked.connect(self.browse)
+        self.nextBtn.clicked.connect(self.next)
+        self.recordBtn.clicked.connect(self.record)
+        self.playBtn.clicked.connect(self.play)
+        self.stopBtn.clicked.connect(self.stop)
+        self.submitBtn.clicked.connect(self.submit)
+        self.exitBtn.clicked.connect(self.exit)
+
+    def retranslateUi(self, VoiceRecorder):
+        _translate = QtCore.QCoreApplication.translate
+        VoiceRecorder.setWindowTitle(_translate("VoiceRecorder", "Voice Recorder "))
+        self.recordBtn.setText(_translate("VoiceRecorder", "RECORD"))
+        self.stopBtn.setText(_translate("VoiceRecorder", "CONTINUE"))
+        self.playBtn.setText(_translate("VoiceRecorder", "PLAY"))
+        self.exitBtn.setText(_translate("VoiceRecorder", "EXIT"))
+        self.numPhrasesLbl.setText(_translate("VoiceRecorder", "Phrases 1 of x:"))
+        self.phrasesLbl.setText(_translate("VoiceRecorder", "The Phrases go in this textbox"))
+        self.instructionsLbl.setText(_translate("VoiceRecorder", "To begin the recording, please select the file containing the phrases. Once you\'ve selected a file, click \"Next\"."))
+        self.phrasesFileLbl.setText(_translate("VoiceRecorder", "Phrases File:"))
+        self.submitBtn.setText(_translate("VoiceRecorder", "SUBMIT"))
+        self.textEditBox.setHtml(_translate("VoiceRecorder", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        self.nextBtn.setText(_translate("VoiceRecorder", "Next"))
+        self.browseBtn.setText(_translate("VoiceRecorder", "Browse"))
+        self.recordingLbl.setText(_translate("VoiceRecorder", "Recording..."))
+
+    # my own code
+    def browse(self):
+        global _filename
+        _filename, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Select text file", "", "Text files (*.txt)")
+        if _filename:
+            self.textEditBox.setText(_filename)
+    def next(self):
+    # try opening the text file, if the text file cannot open, send an error 
+        try:
+            global _textFromFile, _index, _filename
+            with open(_filename, 'r') as openedTextFile:
+                _textFromFile = openedTextFile.readlines()
+            _textFromFile = [line.rstrip('\n') for line in _textFromFile]
+            _index = 0
+            line = _textFromFile[_index]
+            self.phrasesLbl.setText(line)
+            self.numPhrasesLbl.setText("Phrases %d of %d:" % (_index + 1, len(_textFromFile)))
+            
+            openedTextFile.close()
+            
+            self.browseBtn.hide()
+            self.phrasesFileLbl.hide()
+            self.textEditBox.hide()
+            self.nextBtn.hide()
+            self.recordBtn.show()
+            self.exitBtn.show()
+            self.instructionsLbl.hide()
+        except:
+            self.instructionsLbl.setText("The Text file enetered cannot be opened!")
+    def record(self):
+        global FORMAT, CHANNELS, RATE, CHUNK, FRAMES, RECORD_SECONDS, WAVEOUTPUTNAME, waveFile
+        if self.recordBtn.text() == "RECORD":
+            self.recordingLbl.show()
+            self.recordBtn.hide()
+        elif self.recordBtn.text() == "RECORD AGAIN":
+            self.recordingLbl.show()
+            self.recordBtn.hide()
+            self.playBtn.hide()
+            self.submitBtn.hide()
+        # start stream
+        self.startStream()
+        # wait for 50ms
+        QtTest.QTest.qWait(50)
+        #record for 5s
+        for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+            data = streamIn.read(CHUNK)
+            FRAMES.append(data)
+        self.stopStream()
+        self.recordingLbl.hide()
+        self.stopBtn.show()
+        # convert to a wave file
+        waveFile = wave.open(WAVEOUTPUTNAME, 'wb')
+        waveFile.setnchannels(CHANNELS)
+        waveFile.setsampwidth(audio.get_sample_size(FORMAT))
+        waveFile.setframerate(RATE)
+        waveFile.writeframes(b''.join(FRAMES))
+        FRAMES = []
+        waveFile.close()
+    def play(self):
+        global _index, _textFromFile
+        wf = wave.open(WAVEOUTPUTNAME, 'rb')
+        streamOut = audio.open(format = audio.get_format_from_width(wf.getsampwidth()),
+                                channels = wf.getnchannels(),
+                                rate = wf.getframerate(),
+                                output = True)
+        data = wf.readframes(CHUNK)
+        self.numPhrasesLbl.setText("Playing %d of %d..." % (_index + 1, len(_textFromFile)))
+        QtTest.QTest.qWait(50)
+        while len(data):
+            streamOut.write(data)
+            data = wf.readframes(CHUNK)
+            
+        self.numPhrasesLbl.setText("Phrases %d of %d:" % (_index + 1, len(_textFromFile)))
+        streamOut.stop_stream()
+        streamOut.close()
+        wf.close()
+    def stop(self):
+        global FORMAT, CHANNELS, RATE, CHUNK, FRAMES
+        self.recordingLbl.hide()
+        self.stopBtn.hide()
+        self.recordBtn.show()
+        self.playBtn.show()
+        self.submitBtn.show()
+        self.recordBtn.setText("RECORD AGAIN")
+    def submit(self):
+        global _index, _textFromFile, WAVEOUTPUTNAME
+        _index += 1
+        WAVEOUTPUTNAME = "voice_recording_%d.wav" % (_index + 1)
+        if _index > len(_textFromFile)-1:
+            global audio
+            self.phrasesLbl.setText("Thank you for participating in the study.")
+            self.playBtn.hide()
+            self.submitBtn.hide()
+            self.stopBtn.hide()
+            self.recordBtn.hide()
+            self.exitBtn.hide()
+            audio.terminate()
+        else:    
+            line = _textFromFile[_index]
+            self.phrasesLbl.setText(line)
+            self.numPhrasesLbl.setText("Phrases %d of %d:" % (_index + 1, len(_textFromFile)))
+            self.recordBtn.setText("RECORD")
+            self.playBtn.hide()
+            self.submitBtn.hide()
+    def exit(self):
+        sys.exit()
+        
+    def startStream(self):
+        global audio, streamIn
+        audio = pyaudio.PyAudio()
+        # start the stream
+        streamIn = audio.open(format=FORMAT, channels=CHANNELS,
+                        rate=RATE, input=True,
+                        frames_per_buffer=CHUNK)
+    def stopStream(self):
+        global streamIn
+        streamIn.stop_stream()
+        streamIn.close()
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    VoiceRecorder = QtWidgets.QMainWindow()
+    ui = Ui_VoiceRecorder()
+    ui.setupUi(VoiceRecorder)
+    VoiceRecorder.show()
+    sys.exit(app.exec_())
